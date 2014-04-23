@@ -102,7 +102,7 @@ macro(AddTarget TARGET TYPE)
       "${LINK_FLAGS}")
 endmacro()
 # Macros for easily adding targets of certain types.
-macro(AddProgram TARGET)
+macro(AddExecutable TARGET)
   AddTarget("${TARGET}" EXE)
 endmacro()
 macro(AddLibrary TARGET)
