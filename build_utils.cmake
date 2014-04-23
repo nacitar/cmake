@@ -30,6 +30,11 @@
 #
 ###
 
+# New linker directory behavior
+if(COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
 # Appends values to a space-delimited string
 macro(Append var)
   foreach(value ${ARGN})
