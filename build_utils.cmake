@@ -61,7 +61,7 @@ function(AddTargetPrv TARGET TYPE
     LINK_FLAGS)
   set(SOURCES "${CXX_SOURCES};${C_SOURCES}")
   # for generic library additions, choose the proper type
-  if ("${TYPE"}" STREQUAL "LIBRARY")
+  if ("${TYPE}" STREQUAL "LIBRARY")
     if (BUILD_SHARED_LIBS)
       set(TYPE "SHARED")
     else()
