@@ -36,6 +36,15 @@ macro(Append var)
     set("${var}" "${${var}} ${value}")
   endforeach()
 endmacro()
+# Appends values to a list
+macro(ListAppend var)
+  list(APPEND "${var}" ${ARGN})
+endmacro()
+# Sets a list to the specified values
+macro(ListSet var)
+  set("${var}")
+  ListAppend("${var}" ${ARGN})
+endmacro()
 # Clears global lists for flags and source files
 macro(ClearBuildValues)
   set(CXX_SOURCES)
@@ -51,18 +60,24 @@ function(AddTargetPrv TARGET TYPE
     CC_FLAGS CXX_FLAGS C_FLAGS
     LINK_FLAGS)
   set(SOURCES "${CXX_SOURCES};${C_SOURCES}")
+  # for generic library additions, choose the proper type
+  if ("${TYPE"}" STREQUAL "LIBRARY")
+    if (BUILD_SHARED_LIBS)
+      set(TYPE "SHARED")
+    else()
+      set(TYPE "STATIC")
+    endif()
+  endif()
+  # add the proper type of target
   if ("${TYPE}" STREQUAL "EXE")
     add_executable("${TARGET}" ${SOURCES})
-  elseif ("${TYPE"}" STREQUAL "LIBRARY")
-    # generic library
-    add_library("${TARGET}" ${SOURCES})
   elseif ("${TYPE}" STREQUAL "SHARED"
       OR "${TYPE}" STREQUAL "STATIC"
       OR "${TYPE}" STREQUAL "MODULE")
     add_library("${TARGET}" "${TYPE}" ${SOURCES})
   else()
     message(FATAL_ERROR "Invalid target type: ${TYPE}")
-  endif
+  endif()
   set(FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
   Append(FLAGS "${CC_FLAGS} ${CC_FLAGS_${CMAKE_BUILD_TYPE}}")
   Append(FLAGS "${CXX_FLAGS} ${CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
@@ -75,6 +90,8 @@ function(AddTargetPrv TARGET TYPE
   set(FLAGS "${CMAKE_${TYPE}_LINKER_FLAGS}")
   Append(FLAGS "${CMAKE_${TYPE}_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
   Append(FLAGS "${LINK_FLAGS} ${LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
+  Append(FLAGS "${LINK_FLAGS_${TYPE}}")
+  Append(FLAGS "${LINK_FLAGS_${TYPE}_${CMAKE_BUILD_TYPE}}")
   set_target_properties("${TARGET}" PROPERTIES LINK_FLAGS "${FLAGS}")
 endfunction()
 # Builds a target using the globals that govern its creation
