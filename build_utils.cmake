@@ -65,6 +65,7 @@ function(AddTargetPrv TARGET TYPE
     CXX_SOURCES C_SOURCES
     CC_FLAGS CXX_FLAGS C_FLAGS
     LINK_FLAGS)
+  string(TOUPPER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
   set(SOURCES "${CXX_SOURCES};${C_SOURCES}")
   # for generic library additions, choose the proper type
   if ("${TYPE}" STREQUAL "LIBRARY")
@@ -84,20 +85,20 @@ function(AddTargetPrv TARGET TYPE
   else()
     message(FATAL_ERROR "Invalid target type: ${TYPE}")
   endif()
-  set(FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
-  Append(FLAGS "${CC_FLAGS} ${CC_FLAGS_${CMAKE_BUILD_TYPE}}")
-  Append(FLAGS "${CXX_FLAGS} ${CXX_FLAGS_${CMAKE_BUILD_TYPE}}")
+  set(FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${BUILD_TYPE}}")
+  Append(FLAGS "${CC_FLAGS} ${CC_FLAGS_${BUILD_TYPE}}")
+  Append(FLAGS "${CXX_FLAGS} ${CXX_FLAGS_${BUILD_TYPE}}")
   set_source_files_properties(${CXX_SOURCES} PROPERTIES COMPILE_FLAGS
       "${FLAGS}")
-  set(FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}}")
-  Append(FLAGS "${CC_FLAGS} ${CC_FLAGS_${CMAKE_BUILD_TYPE}}")
-  Append(FLAGS "${C_FLAGS} ${C_FLAGS_${CMAKE_BUILD_TYPE}}")
+  set(FLAGS "${CMAKE_C_FLAGS} ${CMAKE_C_FLAGS_${BUILD_TYPE}}")
+  Append(FLAGS "${CC_FLAGS} ${CC_FLAGS_${BUILD_TYPE}}")
+  Append(FLAGS "${C_FLAGS} ${C_FLAGS_${BUILD_TYPE}}")
   set_source_files_properties(${C_SOURCES} PROPERTIES COMPILE_FLAGS "${FLAGS}")
   set(FLAGS "${CMAKE_${TYPE}_LINKER_FLAGS}")
-  Append(FLAGS "${CMAKE_${TYPE}_LINKER_FLAGS_${CMAKE_BUILD_TYPE}}")
-  Append(FLAGS "${LINK_FLAGS} ${LINK_FLAGS_${CMAKE_BUILD_TYPE}}")
+  Append(FLAGS "${CMAKE_${TYPE}_LINKER_FLAGS_${BUILD_TYPE}}")
+  Append(FLAGS "${LINK_FLAGS} ${LINK_FLAGS_${BUILD_TYPE}}")
   Append(FLAGS "${LINK_FLAGS_${TYPE}}")
-  Append(FLAGS "${LINK_FLAGS_${TYPE}_${CMAKE_BUILD_TYPE}}")
+  Append(FLAGS "${LINK_FLAGS_${TYPE}_${BUILD_TYPE}}")
   set_target_properties("${TARGET}" PROPERTIES LINK_FLAGS "${FLAGS}")
 endfunction()
 # Builds a target using the globals that govern its creation
