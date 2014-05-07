@@ -36,6 +36,16 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0011 NEW)
 endif(COMMAND cmake_policy)
 
+# Sets several variables after examining the environment for a given language
+macro(ExamineEnvironment LANG)
+  if (CMAKE_${LANG}_COMPILER_ID STREQUAL "Clang")
+    set(TOOLCHAIN_${LANG}_CLANG "1")
+    set(TOOLCHAIN_${LANG}_GNU_COMPATIBLE "1")
+  elseif (CMAKE_${LANG}_COMPILER_ID STREQUAL "GNU")
+    set(TOOLCHAIN_${LANG}_GNU "1")
+    set(TOOLCHAIN_${LANG}_GNU_COMPATIBLE "1")
+  endif()
+endmacro()
 # Appends values to a space-delimited string
 macro(Append var)
   foreach(value ${ARGN})
@@ -139,5 +149,16 @@ endmacro()
 set(ECHO "COMMAND ${CMAKE_COMMAND} -E echo")
 separate_arguments(ECHO)
 
-# Clear it one time
+# Initialization
+ExamineEnvironment(CXX)
 ClearBuildValues()
+# Deduce the target
+if (CMAKE_SYSTEM_NAME STREQUAL "Generic")
+  set(TARGET_EMBEDDED "1")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  set(TARGET_WINDOWS "1")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(TARGET_LINUX "1")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  set(TARGET_MAC "1")
+endif()
